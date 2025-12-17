@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Иенике Сергей | System Resume</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body class="crt">
+
+    <!-- ФОНОВЫЙ ХОЛСТ -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="start-overlay">
+        <div id="start-btn">[ ЗАПУСТИТЬ СИСТЕМУ ]</div>
+    </div>
+
+    <div id="boot-screen">
+        <div id="cmd-window">
+            <div class="cmd-bar">
+                <div class="cmd-title-text">
+                    <div class="cmd-icon-box">C:</div>
+                    Администратор: Командная строка
+                </div>
+                <div class="cmd-buttons">
+                    <div class="cmd-btn">_</div>
+                    <div class="cmd-btn">□</div>
+                    <div class="cmd-btn close">×</div>
+                </div>
+            </div>
+            <div id="boot-logs"></div>
+        </div>
+    </div>
+
+    <div id="desktop">
+        <!-- GOD MODE WIDGET (Hidden) -->
+        <div id="god-mode-widget"
+            style="display:none; position:absolute; top:30px; right:30px; color:#FFD700; z-index:100; font-family:monospace; text-shadow: 0 0 10px #FFD700; opacity: 0.9; letter-spacing: 1px;">
+            <div style="font-size:16px; font-weight:bold;">[ ★ РЕЖИМ АДМИНИСТРАТОРА ]</div>
+        </div>
+
+        <!-- ОКНО 1: ЛИЧНОЕ ДЕЛО -->
+        <div class="window" id="win-identity"
+            style="top: 30px; left: 30px; width: 360px; height: 520px; display: none;">
+            <div class="window-header">
+                <div class="window-title"><span>[ID]</span> ЛИЧНОЕ ДЕЛО</div>
+                <div class="window-controls">
+                    <div class="win-btn close">X</div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="avatar-placeholder" id="avatar-box">С</div>
+                <div class="panel-title">// ПЕРСОНАЛЬНЫЕ ДАННЫЕ</div>
+                <div class="info-row"><span class="info-label">ИМЯ:</span><span class="info-value">СЕРГЕЙ ИЕНИКЕ</span>
+                </div>
+                <div class="info-row"><span class="info-label">ДОЛЖНОСТЬ:</span><span class="info-value"
+                        style="color:var(--color-warning)">IT-СПЕЦИАЛИСТ</span></div>
+                <div class="info-row" id="snake-master-badge" style="display:none;">
+                    <span class="info-label">СТАТУС:</span>
+                    <span class="info-value" style="color:#FFD700; text-shadow:0 0 10px #FFD700;">★ SNAKE MASTER</span>
+                </div>
+                <div class="info-row"><span class="info-label">ГОРОД:</span><span class="info-value">АНГАРСК, РФ</span>
+                </div>
+                <div class="info-row"><span class="info-label">ГРАЖДАНСТВО:</span><span class="info-value">РОССИЯ</span>
+                </div>
+                <div class="info-row"><span class="info-label">ВОЗРАСТ:</span><span class="info-value"
+                        id="age-val">...</span></div>
+                <div class="info-row"><span class="info-label">СТАЖ:</span><span class="info-value"
+                        id="exp-total-val">...</span></div>
+                <div class="info-row"><span class="info-label">ТЕЛЕФОН:</span><span class="info-value">+7 (929)
+                        431-96-39</span></div>
+                <div class="info-row"><span class="info-label">EMAIL:</span><span
+                        class="info-value">sergey@ienike.ru</span></div>
+                <div class="info-row"><span class="info-label">ЛОКАЦИЯ:</span><span class="info-value"
+                        style="font-size:0.8em">АНГАРСК/ИРКУТСК/УДАЛЕННО</span></div>
+                <div class="info-row"><span class="info-label">ПРАВА:</span><span class="info-value">КАТЕГОРИЯ A</span>
+                </div>
+                <!-- EASTER EGG: RED BUTTON -->
+                <div class="red-button-container">
+                    <div style="font-size: 0.7rem; color: #555; margin-bottom: 5px;">⚠ ОПАСНАЯ ЗОНА ⚠</div>
+                    <button class="do-not-click-btn" onclick="triggerRedButton()">НЕ НАЖИМАТЬ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ОКНО 2: НАВЫКИ -->
+        <div class="window" id="win-skills" style="top: 50px; left: 420px; width: 420px; height: 450px; display: none;">
+            <div class="window-header">
+                <div class="window-title"><span>[SK]</span> НАВЫКИ И УМЕНИЯ</div>
+                <div class="window-controls">
+                    <div class="win-btn close">X</div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="panel-title">// ЯЗЫКОВЫЕ ПАКЕТЫ</div>
+                <div id="lang-container"></div>
+                <br>
+                <div class="panel-title">// ТЕХНИЧЕСКИЕ НАВЫКИ</div>
+                <div id="skills-container"></div>
+                <div class="skill-tags" id="tags-container"></div>
+            </div>
+        </div>
+
+        <!-- ОКНО 3: АРХИВ ОПЫТА -->
+        <div class="window" id="win-exp" style="top: 100px; left: 150px; width: 650px; height: 550px; display: none;">
+            <div class="window-header">
+                <div class="window-title"><span>[XP]</span> АРХИВ ОПЫТА</div>
+                <div class="window-controls">
+                    <div class="win-btn close">X</div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="panel-title" id="exp-header">// ЖУРНАЛ СОБЫТИЙ</div>
+                <div id="experience-container"></div>
+                <br>
+                <div class="panel-title">// БАЗА ЗНАНИЙ (ОБРАЗОВАНИЕ)</div>
+                <div id="education-container"></div>
+            </div>
+        </div>
+
+        <!-- ОКНО ТЕРМИНАЛА -->
+        <div class="window" id="win-term" style="
+            top: calc(50% - 200px); 
+            left: calc(50% - 300px); 
+            width: 600px; 
+            height: 400px; 
+            display: none;">
+            <div class="window-header">
+                <div class="window-title"><span>[TR]</span> ТЕРМИНАЛ</div>
+                <div class="window-controls">
+                    <div class="win-btn close">X</div>
+                </div>
+            </div>
+            <div class="window-content" style="background: black; font-family: monospace;">
+                <div id="term-output">
+                    <div>Добро пожаловать в <span style="color:var(--color-accent)">СИСТЕМУ</span>.</div>
+                    <div>Это сайт, где вы можете ознакомиться с моим резюме.</div>
+                    <div>Введите <span class="term-clickable" onclick="Terminal.run('help')">'help'</span> для списка
+                        команд.</div>
+                    <div>Либо воспользуйтесь кнопками в нижней части экрана.</div>
+                    <br>
+                </div>
+                <div style="display: flex;">
+                    <span style="color: var(--color-accent); margin-right: 10px;"><span
+                            id="term-prompt-user">гость</span>@система:~$</span>
+                    <input type="text" id="term-input"
+                        style="background: transparent; border: none; color: var(--color-term); flex: 1; outline: none; font-family: monospace;"
+                        autocomplete="off">
+                </div>
+                <div id="snake-container" style="display: none; text-align: center; margin-top: 10px;">
+                    <canvas id="snake-canvas" width="400" height="300"
+                        style="border: 1px solid var(--color-term); display: block; margin: 0 auto;"></canvas>
+                    <div style="margin-top: 10px;">Управление: Стрелки | Выход: Q</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ОКНО 5: СВЯЗЬ -->
+        <div class="window" id="win-contact"
+            style="top: 150px; left: 200px; width: 450px; height: 350px; display: none;">
+            <div class="window-header">
+                <div class="window-title"><span>[CT]</span> СВЯЗЬ</div>
+                <div class="window-controls">
+                    <div class="win-btn close">X</div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div class="panel-title">// КАНАЛЫ СВЯЗИ</div>
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+
+                    <a href="mailto:sergey@ienike.ru" class="contact-link">
+                        <span class="icon">[EMAIL]</span>
+                        <span>sergey@ienike.ru</span>
+                    </a>
+
+                    <a href="tel:+79294319639" class="contact-link">
+                        <span class="icon">[PHONE]</span>
+                        <span>+7 (929) 431-96-39</span>
+                    </a>
+
+                    <a href="https://t.me/nepadre" target="_blank" class="contact-link">
+                        <span class="icon">[Telegram]</span>
+                        <span>@nepadre</span>
+                    </a>
+
+                    <a href="https://wa.me/79294319639" target="_blank" class="contact-link">
+                        <span class="icon">[WhatsApp]</span>
+                        <span>+7 (929) 431-96-39</span>
+                    </a>
+
+                    <a href="Иенике Сергей Дмитриевич.pdf" download class="contact-link"
+                        style="border-color: var(--color-warning);">
+                        <span class="icon" style="color: var(--color-warning);">[PDF]</span>
+                        <span>СКАЧАТЬ РЕЗЮМЕ</span>
+                    </a>
+
+                </div>
+
+                <div
+                    style="margin-top: 20px; border-top: 1px dashed var(--color-term-dim); padding-top: 10px; font-size: 0.8rem; color: #666;">
+                    >> СТАТУС: КАНАЛ ОТКРЫТ<br>
+                    >> ШИФРОВАНИЕ: ОТСУТСТВУЕТ
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОКНО 6: СИСТЕМНЫЙ МОНИТОР -->
+    <div class="window" id="win-sysmon" style="top: 100px; left: 100px; width: 500px; height: 400px; display: none;">
+        <div class="window-header">
+            <div class="window-title"><span>[SYS]</span> МОНИТОР РЕСУРСОВ</div>
+            <div class="window-controls">
+                <div class="win-btn close">X</div>
+            </div>
+        </div>
+        <div class="window-content" style="font-family: 'Courier New', monospace; font-size: 0.85rem;">
+            <div class="sys-table-header"
+                style="display:flex; border-bottom:1px solid var(--color-term); margin-bottom:5px; padding-bottom:5px; font-weight:bold;">
+                <span style="flex:1;">PID</span>
+                <span style="flex:3;">NAME</span>
+                <span style="flex:1; text-align:right;">CPU</span>
+                <span style="flex:1; text-align:right;">MEM</span>
+            </div>
+            <div id="sys-proc-list"></div>
+        </div>
+    </div>
+
+    <!-- ТАСКБАР -->
+    <!-- ТАСКБАР (TECH) -->
+    <div id="taskbar">
+        <div class="tb-section start-section">
+            <div class="start-btn" onclick="location.reload()" id="main-start-btn">
+                <span style="font-size: 1.4em; margin-right: 5px; line-height: 1;">❖</span> <span
+                    id="start-btn-text">СИСТЕМА</span>
+            </div>
+        </div>
+
+        <div class="tb-section tasks-section">
+            <!-- Window Toggles -->
+            <div class="tb-item" onclick="WindowManager.toggle('win-identity')">
+                <span class="tb-icon">ID</span> <span>ПРОФИЛЬ</span>
+            </div>
+            <div class="tb-item" onclick="WindowManager.toggle('win-skills')">
+                <span class="tb-icon">SK</span> <span>НАВЫКИ</span>
+            </div>
+            <div class="tb-item" onclick="WindowManager.toggle('win-exp')">
+                <span class="tb-icon">XP</span> <span>АРХИВ</span>
+            </div>
+            <div class="tb-item" onclick="WindowManager.toggle('win-term')">
+                <span class="tb-icon">TR</span> <span>ТЕРМИНАЛ</span>
+            </div>
+            <div class="tb-item" onclick="WindowManager.toggle('win-contact')">
+                <span class="tb-icon">CT</span> <span>СВЯЗЬ</span>
+            </div>
+            <div class="tb-item" id="btn-lowfx" onclick="toggleLowGFX()" style="opacity: 0.7;">
+                <span class="tb-icon">FX</span>
+            </div>
+        </div>
+
+        <div class="tb-section stats-section">
+            <div class="stat-block interactive" onclick="WindowManager.toggle('win-sysmon')"
+                title="Открыть Монитор Ресурсов">
+                <div class="stat-row"><span>CPU</span><span id="val-cpu">0%</span></div>
+                <div class="stat-bar">
+                    <div class="stat-fill" id="stat-cpu"></div>
+                </div>
+            </div>
+            <div class="stat-block interactive" onclick="WindowManager.toggle('win-sysmon')"
+                title="Открыть Монитор Ресурсов">
+                <div class="stat-row"><span>RAM</span><span id="val-ram">0%</span></div>
+                <div class="stat-bar">
+                    <div class="stat-fill" id="stat-ram"></div>
+                </div>
+            </div>
+            <div class="stat-block mini" id="trophy-icon"
+                style="display:none; color:#FFD700; text-shadow:0 0 5px #FFD700;">
+                <div style="font-size:16px;">★</div>
+            </div>
+            <div class="stat-block mini">
+                <div class="net-led" id="net-led"></div>
+                <div>NET</div>
+            </div>
+        </div>
+
+        <div class="tb-section time-section interactive" onclick="toggleTimeMode()" title="Переключить формат времени"
+            style="flex-direction:row; align-items:center;">
+            <!-- Removed Easter Stars -->
+            <div style="display:flex; flex-direction:column; align-items:flex-end; line-height: 1.2;">
+                <div id="sys-time">00:00</div>
+                <div class="uptime-label">
+                    UP: <span id="uptime">00:00:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/main.js" defer></script>
+</body>
+
+</html>

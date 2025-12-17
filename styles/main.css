@@ -1,0 +1,1738 @@
+:root {
+    --color-bg: #050505;
+    --color-bg-dim: #0a0a0a;
+    --color-term: #00ff00;
+    /* Классический Зеленый Терминал */
+    --color-term-dim: rgba(0, 255, 0, 0.2);
+    --color-accent: #00ffff;
+    /* Циан для Инфо */
+    --color-warning: #ffbf00;
+    /* Янтарь для Предупреждений */
+    --color-error: #ff0000;
+    --color-text: #e0e0e0;
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+/* КАСТОМНЫЙ СКРОЛЛБАР */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-dim);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-term-dim);
+    border: 1px solid var(--color-term);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-term);
+}
+
+/* СБРОС И БАЗОВЫЕ СТИЛИ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    transition: filter 0.1s;
+}
+
+/* ЭФФЕКТ CRT (НАЛОЖЕНИЕ) */
+.crt::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2147483646;
+    /* Прямо под таскбаром, над окнами */
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+.crt::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(18, 16, 16, 0.1);
+    opacity: 0;
+    z-index: 2147483646;
+    pointer-events: none;
+    animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+    0% {
+        opacity: 0.0279;
+    }
+
+    50% {
+        opacity: 0.04165;
+    }
+
+    100% {
+        opacity: 0.0392;
+    }
+}
+
+/* === ПРОДВИНУТЫЕ GLITCH ЭФФЕКТЫ === */
+.glitch-rgb-active {
+    animation: glitch-rgb-anim 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+    position: relative;
+}
+
+@keyframes glitch-rgb-anim {
+    0% {
+        text-shadow: 2px 0 var(--color-error), -2px 0 var(--color-accent);
+    }
+
+    25% {
+        text-shadow: -2px 0 var(--color-error), 2px 0 var(--color-accent);
+    }
+
+    50% {
+        text-shadow: 2px 0 var(--color-error), -2px 0 var(--color-accent);
+    }
+
+    75% {
+        text-shadow: -2px 0 var(--color-error), 2px 0 var(--color-accent);
+    }
+
+    100% {
+        text-shadow: 1px 0 var(--color-error), -1px 0 var(--color-accent);
+    }
+}
+
+.glitch-tear-active {
+    animation: glitch-tear-anim 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-tear-anim {
+    0% {
+        clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%);
+        transform: translate(0);
+    }
+
+    2% {
+        clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+        transform: translate(-3px, 2px);
+    }
+
+    4% {
+        clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+        transform: translate(3px, -2px);
+    }
+
+    6% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        transform: translate(0);
+    }
+
+    100% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        transform: translate(0);
+    }
+}
+
+/* РЕЖИМ НИЗКОЙ ПРОИЗВОДИТЕЛЬНОСТИ (LOW FX) */
+body.low-fx .crt::before,
+body.low-fx .crt::after,
+body.low-fx .crt-collapse,
+body.low-fx .flash-overlay,
+body.low-fx .shake,
+body.low-fx .glitch-rgb-active,
+body.low-fx .glitch-tear-active {
+    animation: none !important;
+    display: none !important;
+    background-image: none !important;
+}
+
+body.low-fx * {
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+body.low-fx .window {
+    box-shadow: 4px 4px 0 #000 !important;
+    border: 1px solid var(--color-term) !important;
+}
+
+/* МОБИЛЬНЫЙ ПОЛНЫЙ ЭКРАН */
+@media (max-width: 768px) {
+    .window.mobile-optimized {
+        width: 100% !important;
+        height: calc(100% - 40px) !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+    }
+}
+
+/* ЭКРАН ЗАПУСКА (Для инициализации аудио) */
+#start-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 0.5s;
+}
+
+#start-btn {
+    color: var(--color-term);
+    border: 1px solid var(--color-term);
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: blink 1s infinite;
+}
+
+#start-btn:hover {
+    background: var(--color-term);
+    color: #000;
+    box-shadow: 4px 4px 0 #333;
+    /* Жесткая тень */
+}
+
+/* СТИЛИ ЗАГРУЗКИ (BOOT) */
+/* СТИЛИ ЗАГРУЗКИ (BOOT) */
+#boot-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+}
+
+/* Окно CMD */
+#cmd-window {
+    width: 980px;
+    height: 600px;
+    max-width: 95%;
+    max-height: 90%;
+    background: #0c0c0c;
+    border: 1px solid #444;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Consolas', 'Lucida Console', monospace;
+}
+
+/* Заголовок CMD */
+.cmd-bar {
+    background: #fff;
+    color: #000;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 10px;
+    font-size: 13px;
+    user-select: none;
+}
+
+.cmd-title-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Иконка CMD (CSS) */
+.cmd-icon-box {
+    width: 16px;
+    height: 12px;
+    background: #000;
+    color: #fff;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 1px solid #666;
+}
+
+.cmd-buttons {
+    display: flex;
+    height: 100%;
+}
+
+.cmd-btn {
+    width: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cmd-btn:hover {
+    background: #e5e5e5;
+}
+
+.cmd-btn.close:hover {
+    background: #e81123;
+    color: white;
+}
+
+/* КОНТЕЙНЕР ЛОГОВ */
+#boot-logs {
+    flex: 1;
+    padding: 5px;
+    overflow-y: auto;
+    color: #cccccc;
+    font-size: 16px;
+    background: #0c0c0c;
+}
+
+/* Скроллбар 'как в винде' */
+#boot-logs::-webkit-scrollbar {
+    width: 14px;
+    background: #111;
+}
+
+#boot-logs::-webkit-scrollbar-thumb {
+    background: #444;
+    border: 2px solid #111;
+}
+
+#boot-logs::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#boot-logs::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* TERMINAL INTERACTIVITY & HIGHLIGHTS */
+.term-user {
+    color: var(--color-accent);
+    text-shadow: 0 0 5px var(--color-accent);
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.term-cmd-highlight {
+    color: #fff;
+    font-weight: bold;
+}
+
+.term-clickable {
+    cursor: pointer;
+    color: var(--color-term);
+    border-bottom: 1px dotted var(--color-term-dim);
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.term-clickable:hover {
+    color: #fff;
+    background: rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 8px var(--color-term);
+    border-bottom-color: var(--color-term);
+}
+
+.term-desc {
+    color: #888;
+    font-size: 0.9em;
+    margin-left: 5px;
+}
+
+.term-line {
+    line-height: 1.5;
+    margin-bottom: 2px;
+    word-break: break-all;
+}
+
+/* Убрали фейковый заголовок */
+#boot-logs::before {
+    content: none;
+    display: none;
+}
+
+/* ГЛОБАЛЬНЫЙ РЕТРО СКРОЛЛБАР */
+::-webkit-scrollbar {
+    width: 16px;
+    background: #000;
+}
+
+::-webkit-scrollbar-track {
+    background: #111;
+    border-left: 2px solid var(--color-term);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-term);
+    border: 2px solid #000;
+    box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.2), inset -2px -2px 0 rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-corner {
+    background: #000;
+}
+
+/* ОТСТУП КОНТЕНТА ДЛЯ ЗАГОЛОВКА */
+#boot-logs-content {
+    margin-top: 30px;
+    width: 100%;
+}
+
+/* Искривление экрана (Едва заметное) */
+@media (min-width: 800px) {
+    #boot-screen {
+        transform: perspective(1000px) scale(0.98);
+        box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+    }
+}
+
+/* ЭФФЕКТ ВЫКЛЮЧЕНИЯ TV */
+.crt-collapse {
+    animation: crt-collapse-anim 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes crt-collapse-anim {
+    0% {
+        transform: scale(1, 1);
+        filter: brightness(1);
+        opacity: 1;
+    }
+
+    40% {
+        transform: scale(1, 0.002);
+        filter: brightness(4);
+        opacity: 1;
+    }
+
+    /* Схлопывание в линию */
+    60% {
+        transform: scale(1, 0.002);
+        filter: brightness(4);
+        opacity: 1;
+    }
+
+    /* Удержание линии */
+    100% {
+        transform: scale(0, 0.002);
+        filter: brightness(20);
+        opacity: 0;
+    }
+
+    /* Схлопывание в точку */
+}
+
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    animation: flash-anim 0.2s ease-out forwards;
+    z-index: 30000;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+@keyframes flash-anim {
+    0% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ОКНО (РЕТРО СТИЛЬ) */
+.window {
+    position: absolute;
+    /* Сплошной темный фон, без прозрачности/размытия */
+    background: #000;
+    background-image:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+
+    /* Резкие границы */
+    border: 2px solid var(--color-term);
+    border-radius: 0;
+    /* Без скруглений */
+
+    /* Жесткая ретро тень */
+    box-shadow: 10px 10px 0 #000;
+
+    color: var(--color-term);
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    min-height: 200px;
+    transition: transform 0.1s, opacity 0.2s;
+    /* Без анимации тени */
+
+    animation: win-open 0.2s steps(4) forwards;
+    /* Дерганая анимация открытия */
+}
+
+.window.active {
+    /* Обрабатывается через JS Z-index */
+    border-color: var(--color-accent);
+    box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.8), 0 0 0 2px var(--color-accent);
+}
+
+.window.minimized {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8) translateY(200px);
+}
+
+@keyframes win-open {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ФОНОВЫЙ ХОЛСТ */
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* Позади рабочего стола */
+    pointer-events: auto;
+    /* Разрешить взаимодействие с мышью */
+}
+
+/* ЗАГОЛОВОК ОКНА (РЕТРО) */
+.window-header {
+    height: 28px;
+    background: var(--color-term);
+    /* Инвертированный заголовок */
+    color: #000;
+    /* Черный текст на зеленом */
+    border-bottom: 2px solid var(--color-term);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    cursor: grab;
+    user-select: none;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.window-header:active {
+    cursor: grabbing;
+}
+
+.window-title {
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.window-title span {
+    color: #000;
+    /* Инверсия цвета иконки */
+}
+
+.window-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.win-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #000;
+    background: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: none;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    color: #000;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.win-btn:hover {
+    color: var(--color-term);
+    background: #000;
+    border-color: var(--color-term);
+}
+
+.win-btn.close:hover {
+    color: #fff;
+    background: #ff0000;
+    /* Классический красный фон ошибки */
+    border-color: #800000;
+    text-shadow: none;
+}
+
+/* КОНТЕНТ ОКНА */
+.window-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    position: relative;
+}
+
+/* ТАСКБАР (РЕТРО + TECH) */
+#taskbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 48px;
+    background: #050505;
+    border-top: 2px solid var(--color-term);
+    display: none;
+    /* JS enables it */
+    /* display: flex when active */
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    z-index: 20000;
+    font-family: 'Consolas', monospace;
+    user-select: none;
+    box-shadow: 0 -5px 15px rgba(0, 20, 0, 0.5);
+}
+
+.tb-section {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 15px;
+    border-right: 1px solid #1a1a1a;
+    position: relative;
+}
+
+/* START BUTTON AREA */
+.start-section {
+    padding: 0;
+    background: var(--color-term);
+}
+
+.start-btn {
+    color: #000;
+    background: var(--color-term);
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.start-btn:hover {
+    color: var(--color-term);
+    background: #000;
+    letter-spacing: 1px;
+}
+
+/* INTERACTIVE TASKBAR ITEMS */
+.interactive {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.interactive:hover {
+    opacity: 1;
+    text-shadow: 0 0 8px var(--color-accent);
+    background: rgba(0, 255, 65, 0.1);
+}
+
+/* OKNO СИСТЕМНОГО МОНИТОРА */
+.sys-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px dashed #333;
+}
+
+.sys-row:hover {
+    background: #111;
+    color: var(--color-accent);
+}
+
+/* TASKS AREA */
+.tasks-section {
+    flex: 1;
+    /* Take available space */
+    gap: 10px;
+    overflow-x: auto;
+    justify-content: flex-start;
+}
+
+.tb-item {
+    padding: 6px 12px;
+    border: 1px solid #222;
+    color: #666;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0a0a0a;
+}
+
+.tb-item:hover {
+    border-color: var(--color-term);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+    text-shadow: 0 0 5px var(--color-term);
+}
+
+.tb-item.active {
+    border-color: var(--color-term);
+    background: rgba(0, 255, 0, 0.1);
+    color: var(--color-term);
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+.tb-icon {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+/* STATS AREA */
+.stats-section {
+    gap: 20px;
+    font-size: 10px;
+    color: #666;
+    min-width: 200px;
+    background: #080808;
+    font-family: 'Courier New', monospace;
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    width: 70px;
+}
+
+.stat-block.mini {
+    width: auto;
+    align-items: center;
+    gap: 2px;
+}
+
+.net-led {
+    width: 8px;
+    height: 8px;
+    background: #333;
+    border-radius: 50%;
+    box-shadow: 0 0 2px #000;
+}
+
+.net-led.active {
+    background: #0f0;
+    box-shadow: 0 0 8px #0f0;
+}
+
+.stat-bar {
+    width: 100%;
+    height: 4px;
+    background: #111;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+
+.stat-fill {
+    height: 100%;
+    background: var(--color-term);
+    width: 0%;
+    transition: width 0.2s ease-out;
+    box-shadow: 0 0 5px var(--color-term);
+}
+
+/* TIME AREA */
+.time-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    padding-right: 20px;
+    font-size: 14px;
+    color: var(--color-term);
+    min-width: 100px;
+    background: #000;
+    text-shadow: 0 0 5px var(--color-term);
+}
+
+.uptime-label {
+    font-size: 9px;
+    color: #555;
+    margin-top: 2px;
+    text-shadow: none;
+}
+
+/* Обновление строки Boot для вида cmd */
+.boot-line {
+    min-height: 1.2em;
+    margin-bottom: 2px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: left;
+    width: 100%;
+    font-size: 14px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+}
+
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: var(--color-term);
+    vertical-align: bottom;
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ЭФФЕКТЫ ПАНИКИ И ТРЯСКИ */
+.shake {
+    animation: shake-anim 0.1s cubic-bezier(.36, .07, .19, .97) both infinite;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake-anim {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+.panic-mode {
+    color: var(--color-error) !important;
+    text-shadow: 0 0 5px var(--color-error), 0 0 10px var(--color-error) !important;
+    border: 2px solid var(--color-error);
+    box-shadow: inset 0 0 50px rgba(255, 0, 0, 0.5);
+}
+
+.panic-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 0, 0, 0.1);
+    pointer-events: none;
+    z-index: 998;
+    display: none;
+    mix-blend-mode: overlay;
+}
+
+.color-red {
+    color: var(--color-error);
+    text-shadow: 0 0 5px var(--color-error);
+}
+
+.color-green {
+    color: var(--color-term);
+    text-shadow: 0 0 5px var(--color-term);
+}
+
+.color-dim {
+    color: #555;
+}
+
+.color-accent {
+    color: var(--color-accent);
+}
+
+/* МАКЕТ РАБОЧЕГО СТОЛА */
+#dashboard {
+    display: none;
+    height: 100vh;
+    padding: 1rem;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 350px 1fr;
+    gap: 1rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* ХЕДЕР */
+.header-bar {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--color-term-dim);
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(2px);
+}
+
+.header-status {
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ПАНЕЛИ */
+.panel {
+    border: 1px solid var(--color-term-dim);
+    background: rgba(0, 20, 0, 0.2);
+    padding: 1rem;
+    overflow-y: auto;
+    position: relative;
+}
+
+.panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid var(--color-term);
+    border-left: 2px solid var(--color-term);
+}
+
+.panel::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-bottom: 2px solid var(--color-term);
+    border-right: 2px solid var(--color-term);
+}
+
+.panel-title {
+    color: var(--color-term);
+    font-weight: 700;
+    border-bottom: 1px dashed var(--color-term-dim);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.2rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ВИДЖЕТЫ */
+.profile-section {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+}
+
+.avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border: 2px solid var(--color-term);
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--color-term);
+    background: repeating-linear-gradient(45deg, transparent, transparent 5px, var(--color-term-dim) 5px, var(--color-term-dim) 10px);
+    position: relative;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+    /* Ретро тень */
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 2px;
+}
+
+.info-label {
+    color: var(--color-term-dim);
+}
+
+.info-value {
+    color: var(--color-text);
+    text-align: right;
+    font-weight: bold;
+}
+
+/* EXPERIENCE ACCORDION */
+.main-section {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+details.exp-card {
+    border: 1px dashed var(--color-term-dim);
+    border-left: 2px solid var(--color-term-dim);
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    /* Adjusted for icon */
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+    position: relative;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+details.exp-card:hover {
+    border-color: var(--color-accent);
+    background: rgba(0, 255, 65, 0.05);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.05);
+    cursor: pointer;
+}
+
+details.exp-card[open] {
+    border: 1px solid var(--color-accent);
+    border-left: 4px solid var(--color-accent);
+    background: rgba(0, 50, 50, 0.1);
+}
+
+summary {
+    cursor: pointer;
+    outline: none;
+    list-style: none;
+    padding: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::before {
+    content: "[ РАЗВЕРНУТЬ ]";
+    /* More obvious than [+] */
+    font-size: 0.7rem;
+    color: var(--color-term-dim);
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-family: monospace;
+    opacity: 0.7;
+}
+
+/* Icon on left */
+summary::after {
+    content: "►";
+    position: absolute;
+    left: -1.5rem;
+    color: var(--color-term);
+    transition: transform 0.3s;
+}
+
+details[open] summary::before {
+    content: "[ СВЕРНУТЬ ]";
+    color: var(--color-warning);
+}
+
+details[open] summary::after {
+    transform: rotate(90deg);
+    color: var(--color-accent);
+}
+
+.exp-role {
+    color: var(--color-warning);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.exp-company {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.exp-details {
+    padding: 1rem 0;
+    animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.job-category {
+    margin-bottom: 1rem;
+}
+
+.job-category-title {
+    color: var(--color-term);
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    border-bottom: 1px dotted var(--color-term-dim);
+    display: inline-block;
+}
+
+.exp-desc li {
+    margin-left: 1.5rem;
+    margin-bottom: 0.25rem;
+    list-style-type: square;
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+/* SKILLS */
+.skill-bar {
+    margin-bottom: 0.8rem;
+}
+
+.skill-name {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+    font-size: 0.85rem;
+}
+
+.progress-track {
+    background: var(--color-term-dim);
+    height: 8px;
+    width: 100%;
+    border-radius: 2px;
+}
+
+.progress-fill {
+    background: var(--color-term);
+    height: 100%;
+    width: 0%;
+    box-shadow: 0 0 5px var(--color-term);
+    transition: width 1s ease-out;
+    border-radius: 2px;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.skill-tag {
+    border: 1px solid var(--color-term-dim);
+    color: var(--color-term-dim);
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+.skill-tag:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    box-shadow: 0 0 5px var(--color-accent);
+}
+
+/* CONTACT LINKS */
+.contact-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border: 1px solid var(--color-term-dim);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: none;
+    /* Instant retro feel */
+    background: rgba(0, 255, 65, 0.02);
+    font-family: 'Courier New', monospace;
+}
+
+.contact-link:hover {
+    background: var(--color-term);
+    color: #000;
+    border-color: var(--color-term);
+    box-shadow: 4px 4px 0 #333;
+    transform: translate(-2px, -2px);
+}
+
+.contact-link .icon {
+    font-weight: bold;
+    color: var(--color-accent);
+    min-width: 60px;
+}
+
+.contact-link:hover .icon {
+    color: #000;
+}
+
+.lang-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+    color: #ccc;
+}
+
+.lang-lvl {
+    color: var(--color-term);
+}
+
+/* АДАПТИВНОСТЬ */
+/* === ГЛУБОКАЯ МОБИЛЬНАЯ ОПТИМИЗАЦИЯ === */
+@media (max-width: 768px) {
+    body {
+        overflow: hidden; /* Блокировка прокрутки фона */
+        position: fixed; /* Fix for iOS scroll bounce */
+        width: 100%;
+        height: 100%;
+        touch-action: none; /* Prevent browser zooming/panning globally */
+    }
+
+    /* СКРЫТЬ РАБОЧИЙ СТОЛ, ОСТАВИТЬ ФОН */
+    #dashboard {
+        display: none;
+    }
+    
+    #god-mode-widget {
+        top: 10px !important;
+        right: 10px !important;
+        font-size: 12px;
+    }
+
+    /* ОПТИМИЗАЦИЯ ТАСКБАРА (SCROLLABLE) */
+    #taskbar {
+        flex-wrap: nowrap;
+        height: 60px; /* Увеличенная высота для тача */
+        padding: 0;
+        gap: 0;
+        background: #050505;
+        width: 100%;
+        box-sizing: border-box;
+        border-top: 2px solid var(--color-term);
+        justify-content: flex-start;
+        overflow-x: auto; /* Прокрутка */
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
+        z-index: 99999;
+    }
+
+    #taskbar::-webkit-scrollbar {
+        height: 2px;
+        background: #111;
+    }
+    #taskbar::-webkit-scrollbar-thumb {
+        background: var(--color-term);
+    }
+    
+    .tb-section {
+        border-right: 1px solid #333;
+        flex-shrink: 0; /* Не сжимать секции */
+    }
+    
+    .start-btn {
+        padding: 0 15px;
+        font-size: 14px;
+    }
+    
+    .tasks-section {
+        padding: 0;
+        gap: 5px;
+    }
+
+    .tb-item {
+        height: 100%;
+        border: none;
+        border-right: 1px solid #222;
+        padding: 0 15px;
+        font-size: 12px;
+        flex-shrink: 0;
+        min-width: 60px;
+        justify-content: center;
+        background: transparent;
+    }
+    
+    .tb-item span:not(.tb-icon) {
+        display: none; /* Скрыть текст, оставить иконки для экономии места */
+    }
+    
+    .tb-icon {
+        font-size: 16px;
+    }
+    
+    .tb-item.active {
+        background: rgba(0, 255, 0, 0.15);
+        border-bottom: 2px solid var(--color-term);
+    }
+
+    /* stats section hidden on very small screens or minimized */
+    .stats-section {
+        display: none; 
+    }
+    
+    .time-section {
+        padding-right: 10px;
+        min-width: auto;
+    }
+    
+    #sys-time {
+        font-size: 12px;
+    }
+    .uptime-label {
+        display: none;
+    }
+
+    /* ПОЛНОЭКРАННЫЕ ОКНА (APP-LIKE) */
+    .window {
+        width: 100% !important;
+        height: calc(100% - 60px) !important; /* Minus taskbar */
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 2px solid var(--color-term) !important;
+        display: flex; /* Ensure flex for column layout */
+        flex-direction: column;
+        opacity: 0; /* Hidden initially for animation */
+        animation: mobile-slide-up 0.3s forwards;
+    }
+    
+    @keyframes mobile-slide-up {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .window-header {
+        height: 50px; /* Удобно для пальца */
+        padding: 0 10px;
+        flex-shrink: 0;
+    }
+
+    .window-title {
+        font-size: 1.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 70%;
+    }
+
+    .window-controls {
+        gap: 15px;
+    }
+
+    .win-btn {
+        width: 44px; /* Touch target size min recommendation */
+        height: 44px;
+        font-size: 20px;
+        border: none; /* remove visual noise */
+    }
+    
+    .window-content {
+        -webkit-overflow-scrolling: touch;
+        padding: 15px 10px;
+    }
+    
+    /* INPUTS */
+    input, textarea, #term-input {
+        font-size: 16px !important; /* iOS zoom prevention */
+        line-height: normal;
+        padding: 8px 0;
+    }
+}
+
+/* Specific Fixes for CMD/Boot on Mobile */
+@media (max-width: 768px) {
+    #boot-screen {
+        padding: 0;
+        align-items: flex-start; /* Top align */
+    }
+
+    #cmd-window {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100%;
+        max-height: 100%;
+        border: none;
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .cmd-bar {
+        height: 40px;
+        padding: 0 10px;
+    }
+    
+    #boot-logs {
+        padding: 10px;
+        font-size: 13px; /* Slightly larger */
+        padding-bottom: 60px; /* Safe area */
+    }
+    
+    .boot-line {
+        margin-bottom: 6px;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 480px) {
+    :root { font-size: 14px; }
+    
+    /* Profile adaptations */
+    .avatar-placeholder {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5px 0;
+    }
+    
+    .info-value {
+        text-align: left;
+        padding-left: 0;
+        margin-top: 2px;
+        color: #fff;
+    }
+
+    /* Experience cards */
+    details.exp-card {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    
+    summary {
+        font-size: 1rem;
+        padding-right: 0;
+    }
+    
+    .exp-role { 
+        font-size: 1rem; 
+        line-height: 1.2;
+    }
+    
+    /* Terminal adjustments */
+    #term-output {
+        font-size: 12px;
+        padding-bottom: 20px;
+    }
+    
+    /* Global Touch Fixes */
+    * {
+        /* Disable tap highlight on Android/iOS */
+        -webkit-tap-highlight-color: transparent; 
+    }
+    
+    /* Selection handling */
+    body, .window {
+        user-select: none;
+    }
+    input, textarea, #term-output, .boot-line {
+        user-select: text;
+    }
+}
+
+/* EASTER EGG STARS */
+.easter-egg-stars {
+    display: flex;
+    gap: 5px;
+    margin-right: 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+.star-icon {
+    transition: color 0.5s, text-shadow 0.5s;
+}
+
+.star-icon.unlocked {
+    color: #FFD700;
+    text-shadow: 0 0 5px #FFD700;
+    animation: star-pop 0.5s;
+}
+
+@keyframes star-pop {
+    50% {
+        transform: scale(1.5);
+    }
+}
+
+/* RED BUTTON DO NOT CLICK */
+.red-button-container {
+    margin-top: 20px;
+    border-top: 2px dashed var(--color-error);
+    /* Red dashed line */
+    padding-top: 20px;
+    text-align: center;
+}
+
+.do-not-click-btn {
+    background: #000;
+    border: 2px solid var(--color-error);
+    color: var(--color-error);
+    padding: 10px 20px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 0 5px var(--color-error);
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.do-not-click-btn:hover {
+    background: var(--color-error);
+    color: #000;
+    box-shadow: 0 0 15px var(--color-error);
+}
+
+.do-not-click-btn:active {
+    transform: scale(0.95);
+}
+
+/* EXTRA FX: DEEP TERMINAL FAILURE */
+@keyframes crt-distort {
+    0% {
+        transform: scale(1.001) skew(0.5deg);
+        filter: contrast(1.2) brightness(1.1) saturate(1.2);
+    }
+
+    10% {
+        transform: scale(0.999) skew(-0.5deg);
+        filter: contrast(1.1) brightness(0.9) saturate(1.5) sepia(0.2);
+    }
+
+    20% {
+        transform: scale(1.002) skew(1deg);
+        filter: contrast(1.4) brightness(1.2) saturate(1) hue-rotate(5deg);
+    }
+
+    30% {
+        transform: scale(1.0) skew(0deg);
+        filter: contrast(1.0) brightness(1.0) saturate(1);
+    }
+
+    90% {
+        transform: scale(1.0) skew(0deg);
+        opacity: 1;
+    }
+
+    92% {
+        transform: translate(5px, 0);
+        opacity: 0.8;
+    }
+
+    94% {
+        transform: translate(-5px, 0);
+        opacity: 1;
+    }
+
+    96% {
+        transform: scale(1.05, 0.05);
+        opacity: 0.5;
+    }
+
+    /* Screen collapse momentary */
+    100% {
+        transform: scale(1.0) skew(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes noise {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 100px 100px;
+    }
+}
+
+.panic-mode {
+    animation: crt-distort 0.2s infinite;
+    /* FAST shaking/failing */
+    border: 2px solid red !important;
+    box-shadow: 0 0 20px red, inset 0 0 50px rgba(255, 0, 0, 0.5);
+    background: rgba(20, 0, 0, 0.95);
+}
+
+.panic-mode::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg,
+            rgba(255, 0, 0, 0.1),
+            rgba(255, 0, 0, 0.1) 1px,
+            transparent 1px,
+            transparent 2px);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.panic-text {
+    font-size: 2em;
+    color: red;
+    font-weight: bold;
+    background: #000;
+    padding: 10px;
+    border: 4px double red;
+    text-align: center;
+    display: block;
+    margin: 20px auto;
+    max-width: 80%;
+    font-family: 'Consolas', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 10px 10px 0 rgba(255, 0, 0, 0.3);
+}
+
+.corrupt-data {
+    font-size: 0.8em;
+    color: #ff3333;
+    opacity: 0.7;
+    word-break: break-all;
+    margin: 5px 0;
+    line-height: 1;
+    font-family: 'Courier New', monospace;
+}
+
+@keyframes text-glitch {
+    0% {
+        transform: translate(0, 0);
+        clip-path: inset(0 0 0 0);
+    }
+
+    20% {
+        transform: translate(-2px, 2px);
+        clip-path: inset(10% 0 30% 0);
+    }
+
+    40% {
+        transform: translate(2px, -2px);
+        clip-path: inset(20% 0 60% 0);
+    }
+
+    60% {
+        transform: translate(-2px, -2px);
+        clip-path: inset(40% 0 10% 0);
+    }
+
+    80% {
+        transform: translate(2px, 2px);
+        clip-path: inset(80% 0 5% 0);
+    }
+
+    100% {
+        transform: translate(0, 0);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes pulse-gold {
+    0% {
+        box-shadow: 0 0 5px #FFD700;
+        opacity: 0.9;
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 20px #FFD700;
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    100% {
+        box-shadow: 0 0 5px #FFD700;
+        opacity: 0.9;
+        transform: scale(1);
+    }
+}
